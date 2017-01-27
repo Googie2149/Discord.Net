@@ -113,12 +113,23 @@ namespace Discord.Commands
             }
             finally
             {
+<<<<<<< HEAD
                 _moduleLock.Release();
             }
         }
         private ModuleInfo LoadModuleInternal(ModuleInfo module)
         {
             _moduleDefs.Add(module);
+=======
+                if (_allCommands.Count == 0)  return;
+
+                if (Config.IsSelfBot)
+                {
+                    if (e.Message.User == null || e.Message.User.Id != Client.CurrentUser.Id) return; // Will only listen to Self
+                }
+                else
+                    if (e.Message.User == null || e.Message.User.Id == Client.CurrentUser.Id) return; // Normal expected behavior for bots
+>>>>>>> refs/remotes/RogueException/master
 
             foreach (var command in module.Commands)
                 _map.AddCommand(command);
@@ -129,6 +140,7 @@ namespace Discord.Commands
             return module;
         }
 
+<<<<<<< HEAD
         public async Task<bool> RemoveModuleAsync(ModuleInfo module)
         {
             await _moduleLock.WaitAsync().ConfigureAwait(false);
@@ -211,6 +223,37 @@ namespace Discord.Commands
             for (int i = 0; i < _entityTypeReaders.Count; i++)
             {
                 if (type == _entityTypeReaders[i].Item1 || typeInfo.ImplementedInterfaces.Contains(_entityTypeReaders[i].Item1))
+=======
+                //Check for mention
+                if (cmdMsg == null && Config.AllowMentionPrefix)
+                {
+                    string mention = client.CurrentUser.Mention;
+                    if (msg.StartsWith(mention) && msg.Length > mention.Length)
+                        cmdMsg = msg.Substring(mention.Length + 1);
+                    else
+                    {
+                        mention = $"@{client.CurrentUser.Name}";
+                        if (msg.StartsWith(mention) && msg.Length > mention.Length)
+                            cmdMsg = msg.Substring(mention.Length + 1);
+                    }
+
+                    string mention2 = client.CurrentUser.NicknameMention;
+                    if (mention2 != null)
+                    {
+                        if (msg.StartsWith(mention2) && msg.Length > mention2.Length)
+                            cmdMsg = msg.Substring(mention2.Length + 1);
+                        else
+                        {
+                            mention2 = $"@{client.CurrentUser.Name}";
+                            if (msg.StartsWith(mention2) && msg.Length > mention2.Length)
+                                cmdMsg = msg.Substring(mention2.Length + 1);
+                        }
+                    }
+                }
+                
+                //Check using custom activator
+                if (cmdMsg == null && Config.CustomPrefixHandler != null)
+>>>>>>> refs/remotes/RogueException/master
                 {
                     reader = Activator.CreateInstance(_entityTypeReaders[i].Item2.MakeGenericType(type)) as TypeReader;
                     _defaultTypeReaders[type] = reader;
